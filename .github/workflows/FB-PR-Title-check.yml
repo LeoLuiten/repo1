@@ -32,6 +32,31 @@ jobs:
           echo "Current PR Title: $CURRENT_TITLE"
           echo "Branch Name: $BRANCH_NAME"
 
+          # Check if title differs from branch name
+          if [[ "$CURRENT_TITLE" != *"$BRANCH_NAME"* ]]; then
+            echo "PR Title differs from branch name. Updating PR title..."
+
+            # Construct new title (if required format applies, adjust accordingly)
+            if [[ "$CURRENT_TITLE" =~ ^(--(minor|major|patch)) ]]; then
+              FLAG="${BASH_REMATCH[0]}"
+              NEW_TITLE="${FLAG} | ${BRANCH_NAME}"
+            else
+              # Default fallback if no flag is present
+              NEW_TITLE="$BRANCH_NAME"
+            fi
+
+            # Update PR title
+            curl -X PATCH \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/$REPO/pulls/$PR_NUMBER \
+              -d "{\"title\": \"$NEW_TITLE\"}"
+
+            echo "PR Title updated to: $NEW_TITLE"
+          else
+            echo "PR Title matches the branch name. No update needed."
+          fi
+
           # Check if the title starts with --minor, --major, or --patch
           if [[ "$CURRENT_TITLE" =~ ^(--(minor|major|patch)) ]]; then
             FLAG="${BASH_REMATCH[0]}"
