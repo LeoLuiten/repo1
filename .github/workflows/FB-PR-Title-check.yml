@@ -25,35 +25,16 @@ jobs:
 
           # Fetch current PR title
           CURRENT_TITLE=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER | jq -r .title)
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER | jq -r .title)
 
-          echo "Current PR Title: $CURRENT_TITLE"
-          echo "Branch Name: $BRANCH_NAME"
 
-          # Step 1: Ensure the branch name is contained in the title
-          if [[ "$CURRENT_TITLE" != *"$BRANCH_NAME"* ]]; then
-            echo "Branch name not found in PR title. Updating title to match branch name..."
-            CURRENT_TITLE="$BRANCH_NAME"
-            
-            # Update PR title to branch name
-            curl -X PATCH \
-              -H "Authorization: token $GITHUB_TOKEN" \
-              -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER \
-              -d "{\"title\": \"$CURRENT_TITLE\"}"
-            
-            echo "PR Title updated to: $CURRENT_TITLE"
-          else
-            echo "Branch name is already included in the PR title."
-          fi
-
-          # Step 2: Ensure the flag is prefixed in the title
+          # Check if the title starts with --minor, --major, or --patch
           if [[ "$CURRENT_TITLE" =~ ^(--(minor|major|patch)) ]]; then
-            echo "Title already contains a valid prefix."
+            FLAG="${BASH_REMATCH[0]}"
+            NEW_TITLE="${FLAG} | ${BRANCH_NAME}"
           else
-            echo "ERROR: Title is missing a valid prefix (--minor, --major, or --patch)."
-            echo "Please update the PR title to include the required flag."
+            echo "ERROR: PR title must start with '--minor', '--major', or '--patch'."
             exit 1
           fi
 
