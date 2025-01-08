@@ -89,6 +89,8 @@ jobs:
           elif [[ "$LATEST_COMMIT_MSG" == *"--minor"* ]]; then
             MINOR=$((MINOR + 1))
             PATCH=0
+          elif [[ "$LATEST_COMMIT_MSG" == *"v."* ]]; then
+            echo "Tagged commit detected (v.), skipping version modification."
           else
             PATCH=$((PATCH + 1))
           fi

@@ -131,7 +131,7 @@ jobs:
             # Check if there are changes
             if [ $diff_exists -eq 0 ]; then
               echo "No changes to merge. Creating a placeholder commit."
-              git commit --allow-empty -m "${{ env.stripped_branch }}"
+              git commit --allow-empty -m "v.${{ env.stripped_branch }}-dev"
             else
               echo "Differences detected. Proceeding with merge."
               git merge origin/${{ github.event.inputs.release_branch }} -m "${{ env.stripped_branch }} released"

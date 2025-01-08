@@ -143,7 +143,7 @@ jobs:
               git reset --hard origin/$TARGET_BRANCH
 
               # Create an empty commit
-              git commit --allow-empty -m "${{ github.event.inputs.next_version }}"
+              git commit --allow-empty -m "v.${{ github.event.inputs.next_version }}-dev"
 
               # Push the empty commit to the target branch
               echo "Pushing the placeholder commit to $TARGET_BRANCH..."
