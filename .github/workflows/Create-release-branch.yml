@@ -277,11 +277,3 @@ jobs:
 
 
           echo "$TARGET_BRANCH branch protection rules updated to lock."
-
-
-
-          
-
-
-
-
